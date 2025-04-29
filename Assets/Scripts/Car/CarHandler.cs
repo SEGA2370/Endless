@@ -51,13 +51,16 @@ public class CarHandler : MonoBehaviour
             switch (GameManager.Instance.CurrentDifficulty)
             {
                 case GameManager.Difficulty.Easy:
-                    SetMaxSpeed(40f);
+                    SetMaxSpeed(20f);
+                    accelerationMultiplier = 2f; // slower acceleration
                     break;
                 case GameManager.Difficulty.Normal:
-                    SetMaxSpeed(30f); // Your current
+                    SetMaxSpeed(30f);
+                    accelerationMultiplier = 3f;
                     break;
                 case GameManager.Difficulty.Hard:
-                    SetMaxSpeed(20f);
+                    SetMaxSpeed(50f);
+                    accelerationMultiplier = 5f; // accelerate faster 
                     break;
             }
         }
@@ -245,6 +248,8 @@ public class CarHandler : MonoBehaviour
         carCrashAS.pitch = Mathf.Clamp(carCrashAS.volume, 0.3f, 1.0f);
 
         carCrashAS.Play();
+
+        FindObjectOfType<ScoreManager>().StopCounting();
 
         StartCoroutine(SlowDownTimerCO());
     }

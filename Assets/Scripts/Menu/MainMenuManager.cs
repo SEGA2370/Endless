@@ -15,8 +15,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OpenSettings()
     {
-        // We will later open settings panel here
-        Debug.Log("Open Settings Menu");
+        FindObjectOfType<SettingsMenuManager>().OpenSettings();
     }
 
     public void QuitGame()

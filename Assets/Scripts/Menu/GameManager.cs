@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("GameScene"); // replace with your actual scene name
+        SceneManager.LoadScene("Stage");
     }
 
     public void SetDifficulty(int difficultyIndex)

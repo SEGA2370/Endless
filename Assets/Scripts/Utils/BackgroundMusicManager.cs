@@ -13,7 +13,8 @@ public class BackgroundMusicManager : MonoBehaviour
     {
         if (playlist.Count > 0)
         {
-            PlayCurrentSong();
+            audioSource.clip = playlist[0];
+            audioSource.Play();
         }
     }
 
