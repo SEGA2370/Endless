@@ -1400,6 +1400,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mage
       objectReference: {fileID: 0}
+    - target: {fileID: 1290052851368137385, guid: d690f83b1857912449a8fbe1e98084b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1461546241455817384, guid: d690f83b1857912449a8fbe1e98084b8,
         type: 3}
       propertyPath: m_Avatar

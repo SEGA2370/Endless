@@ -57,7 +57,7 @@ public class CarHandler : MonoBehaviour
             switch (GameManager.Instance.CurrentDifficulty)
             {
                 case GameManager.Difficulty.Easy:
-                    SetMaxSpeed(20f);
+                    SetMaxSpeed(25f);
                     accelerationMultiplier = 2f; // slower acceleration
                     break;
                 case GameManager.Difficulty.Normal:
@@ -65,7 +65,7 @@ public class CarHandler : MonoBehaviour
                     accelerationMultiplier = 3f;
                     break;
                 case GameManager.Difficulty.Hard:
-                    SetMaxSpeed(50f);
+                    SetMaxSpeed(40f);
                     accelerationMultiplier = 5f; // accelerate faster 
                     break;
             }
@@ -231,6 +231,11 @@ public class CarHandler : MonoBehaviour
         }
     }
 
+    public void SetLane(int laneIndex)
+    {
+        currentLane = Mathf.Clamp(laneIndex, 0, lanePositions.Length - 1);
+    }
+
     //Events
     private void OnCollisionEnter(Collision collision)
     {
@@ -258,6 +263,8 @@ public class CarHandler : MonoBehaviour
             }
         }
 
+        if (isExploded) return;
+
         Vector3 velovity = rigidBody.velocity;
         explodeHandler.Explode( velovity * 45);
 
@@ -271,7 +278,11 @@ public class CarHandler : MonoBehaviour
 
         carCrashAS.Play();
 
-        FindObjectOfType<ScoreManager>().StopCounting();
+        if (isPlayer)
+        {
+            FindObjectOfType<ScoreManager>().StopCounting();
+            StartCoroutine(ShowDeathPanelWithDelay());
+        }
 
         StartCoroutine(SlowDownTimerCO());
 

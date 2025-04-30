@@ -6,7 +6,7 @@ public class AICarSpawner : MonoBehaviour
 {
     [SerializeField] GameObject[] carAIPrefabs;
 
-    GameObject[] carAIPool = new GameObject[20];
+    private GameObject[] carAIPool;
 
     Transform playerCarTransform;
 
@@ -22,6 +22,21 @@ public class AICarSpawner : MonoBehaviour
     void Start()
     {
         playerCarTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
+        int poolSize = 20;
+        switch (GameManager.Instance.CurrentDifficulty)
+        {
+            case GameManager.Difficulty.Easy:
+                poolSize = 10;
+                break;
+            case GameManager.Difficulty.Normal:
+                poolSize = 20;
+                break;
+            case GameManager.Difficulty.Hard:
+                poolSize = 30;
+                break;
+        }
+        carAIPool = new GameObject[poolSize];
 
         int prefabIndex = 0;
 
@@ -52,7 +67,7 @@ public class AICarSpawner : MonoBehaviour
 
     void SpawnNewCars()
     {
-        if (Time.time - timeLastCarSpawned < 2)
+        if (Time.time - timeLastCarSpawned < 1)
             return;
 
         GameObject carToSpawn = null;
@@ -74,9 +89,11 @@ public class AICarSpawner : MonoBehaviour
         if (carToSpawn == null)
             return;
 
-        Vector3 spawnPosition = new Vector3(0, 0, playerCarTransform.transform.position.z + 100);
+        int randomLane = Random.Range(0, Utils.CarLanes.Length);
+        float laneX = Utils.CarLanes[randomLane];
+        Vector3 spawnPosition = new Vector3(laneX, 0, playerCarTransform.position.z + 100);
 
-        if (Physics.OverlapBoxNonAlloc(spawnPosition, Vector3.one * 2, overlappedCheckCollider, Quaternion.identity, otherCarslayerMask) > 0)
+        if (Physics.OverlapBoxNonAlloc(spawnPosition, new Vector3(1, 1, 2), overlappedCheckCollider, Quaternion.identity, otherCarslayerMask) > 0)
             return;
 
         carToSpawn.transform.position = spawnPosition;

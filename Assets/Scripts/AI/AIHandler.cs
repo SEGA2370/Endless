@@ -100,10 +100,13 @@ public class AIHandler : MonoBehaviour
     //Events
     private void OnEnable()
     {
-        //set random speed
-        carHandler.SetMaxSpeed(Random.Range(2, 4));
-
-        //Set a random lane
+        // Set a random lane index
         drivingInLane = Random.Range(0, Utils.CarLanes.Length);
+
+        // Update the car handler's lane accordingly
+        carHandler.SetLane(drivingInLane);
+
+        // Set a random speed
+        carHandler.SetMaxSpeed(Random.Range(2, 4));
     }
 }
