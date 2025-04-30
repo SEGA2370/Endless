@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class CarHandler : MonoBehaviour
 {
+    [SerializeField] private float[] lanePositions = { -0.3f, 0.3f };
+    [SerializeField] private float laneChangeSpeed = 5f;
+    private int currentLane = 1;
+    private bool isChangingLane = false;
+
     [SerializeField] Rigidbody rigidBody;
 
     [SerializeField] Transform gameModel;
@@ -33,8 +38,9 @@ public class CarHandler : MonoBehaviour
     //Input
     Vector2 input = Vector2.zero;
 
+    private bool hasBeenHit = false;
+    private bool isInvulnerable = false;
 
-    //Start is called before the first frame update
     bool isExploded = false;
 
     bool isPlayer = true;
@@ -135,29 +141,23 @@ public class CarHandler : MonoBehaviour
 
     void Steer()
     {
-        if (Mathf.Abs(input.x) > 0)
-        {
-            //Move the car sideways
-            float speedBaseSteerLimit = rigidBody.velocity.z / 5.0f;
-            speedBaseSteerLimit = Mathf.Clamp01(speedBaseSteerLimit);
-
-            rigidBody.AddForce(rigidBody.transform.right * steeringMultiplier * input.x * speedBaseSteerLimit);
-
-            //Normalize the X Velocity
-            float normalizedX = rigidBody.velocity.x / maxSteerVelocity;
-
-            //Ensure that we dont allow it to get bigger than 1 in magnitued
-            normalizedX = Mathf.Clamp(normalizedX, -1.0f, 1.0f);
-
-            //Make sure we stay within the turn speed limit
-            rigidBody.velocity = new Vector3(normalizedX * maxSteerVelocity, 0, rigidBody.velocity.z);
-        }
-        else
-        {
-            //Auto center car
-            rigidBody.velocity = Vector3.Lerp(rigidBody.velocity, new Vector3(0, 0, rigidBody.velocity.z), Time.fixedDeltaTime * 3);
-        }
+        float targetX = lanePositions[currentLane];
+        Vector3 targetPosition = new Vector3(targetX, transform.position.y, transform.position.z);
+        Vector3 newPosition = Vector3.Lerp(transform.position, targetPosition, Time.fixedDeltaTime * laneChangeSpeed);
+        rigidBody.MovePosition(newPosition);
     }
+
+    public void ChangeLane(int direction)
+    {
+    int newLane = currentLane + direction;
+    newLane = Mathf.Clamp(newLane, 0, lanePositions.Length - 1);
+    currentLane = newLane;
+    }
+
+    public void SetForwardInput(float vertical)
+{
+    input = new Vector2(0, vertical); // Only Y-axis is relevant
+}
 
     void UpdateCarAudio()
     {
@@ -222,6 +222,14 @@ public class CarHandler : MonoBehaviour
         Time.timeScale = 1.0f;
 
     }
+    private void SetCollidersTrigger(bool state)
+    {
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+        foreach (var col in colliders)
+        {
+            col.isTrigger = state;
+        }
+    }
 
     //Events
     private void OnCollisionEnter(Collision collision)
@@ -234,6 +242,20 @@ public class CarHandler : MonoBehaviour
 
             if (collision.transform.root.CompareTag("Car AI"))
                 return;
+        }
+
+        // Only the player has invulnerability logic
+        if (isPlayer)
+        {
+            if (isInvulnerable)
+                return;
+
+            if (!hasBeenHit)
+            {
+                hasBeenHit = true;
+                StartCoroutine(InvulnerabilityTimer());
+                return; // skip crash logic on first hit
+            }
         }
 
         Vector3 velovity = rigidBody.velocity;
@@ -252,5 +274,62 @@ public class CarHandler : MonoBehaviour
         FindObjectOfType<ScoreManager>().StopCounting();
 
         StartCoroutine(SlowDownTimerCO());
+
+if (isPlayer)
+{
+    StartCoroutine(ShowDeathPanelWithDelay());
+}
+    }
+    private IEnumerator InvulnerabilityTimer()
+    {
+        isInvulnerable = true;
+
+        // Turn colliders into triggers to pass through objects
+        SetCollidersTrigger(true);
+
+        StartCoroutine(FlashWhileInvulnerable());
+
+        yield return new WaitForSeconds(3f);
+
+        // Return to normal collision behavior
+        SetCollidersTrigger(false);
+        isInvulnerable = false; isInvulnerable = false;
+    }
+    private IEnumerator FlashWhileInvulnerable()
+    {
+        Renderer[] renderers = gameModel.GetComponentsInChildren<Renderer>();
+
+        float flashDelay = 0.2f;
+        float timer = 0f;
+
+        while (isInvulnerable)
+        {
+            foreach (Renderer rend in renderers)
+            {
+                rend.enabled = false;
+            }
+
+            yield return new WaitForSeconds(flashDelay);
+
+            foreach (Renderer rend in renderers)
+            {
+                rend.enabled = true;
+            }
+
+            yield return new WaitForSeconds(flashDelay);
+
+            timer += flashDelay * 2;
+        }
+
+        // Ensure renderers are visible again after invulnerability
+        foreach (Renderer rend in renderers)
+        {
+            rend.enabled = true;
+        }
+    }
+    private IEnumerator ShowDeathPanelWithDelay()
+    {
+        yield return new WaitForSecondsRealtime(2f);
+        FindObjectOfType<DeathUIManager>().ShowDeathPanel();
     }
 }
