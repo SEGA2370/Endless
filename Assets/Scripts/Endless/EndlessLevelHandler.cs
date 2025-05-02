@@ -108,6 +108,4 @@ public class EndlessLevelHandler : MonoBehaviour
 
         return sectionsPool[randomIndex];
     }
-
-
 }
