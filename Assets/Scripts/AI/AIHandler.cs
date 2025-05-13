@@ -9,7 +9,7 @@ public class AIHandler : MonoBehaviour
     //Collision Detection
     [SerializeField] LayerMask otherCarslayerMask;
 
-    [SerializeField] MeshCollider meshCollider;
+    [SerializeField] Collider meshCollider;
 
     [Header("SFX")]
     [SerializeField] AudioSource honkHornAS;

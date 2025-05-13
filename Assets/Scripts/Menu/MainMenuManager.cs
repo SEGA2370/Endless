@@ -17,6 +17,11 @@ public class MainMenuManager : MonoBehaviour
     {
         FindObjectOfType<SettingsMenuManager>().OpenSettings();
     }
+    public void OpenIAPTestScene()
+    {
+        GameManager.Instance.SetDifficulty(difficultyDropdown.value);
+        SceneManager.LoadScene("Stage_IAP");
+    }
 
     public void QuitGame()
     {

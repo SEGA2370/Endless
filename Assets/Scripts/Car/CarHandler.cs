@@ -127,7 +127,8 @@ public class CarHandler : MonoBehaviour
         if (rigidBody.velocity.z >= maxForwardVelocity)
             return;
 
-        rigidBody.AddForce(rigidBody.transform.forward * accelerationMultiplier * input.y);
+        float adjustedAccel = accelerationMultiplier * Time.fixedDeltaTime * 60f;
+        rigidBody.AddForce(rigidBody.transform.forward * adjustedAccel * input.y, ForceMode.Force);
     }
 
     void Brake()
@@ -143,7 +144,7 @@ public class CarHandler : MonoBehaviour
     {
         float targetX = lanePositions[currentLane];
         Vector3 targetPosition = new Vector3(targetX, transform.position.y, transform.position.z);
-        Vector3 newPosition = Vector3.Lerp(transform.position, targetPosition, Time.fixedDeltaTime * laneChangeSpeed);
+        Vector3 newPosition = Vector3.MoveTowards(transform.position, targetPosition, laneChangeSpeed * Time.fixedDeltaTime);
         rigidBody.MovePosition(newPosition);
     }
 

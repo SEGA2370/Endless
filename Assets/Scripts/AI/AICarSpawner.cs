@@ -19,25 +19,21 @@ public class AICarSpawner : MonoBehaviour
 
     Collider[] overlappedCheckCollider = new Collider[1];
 
-    void Start()
+    IEnumerator Start()
     {
+        // Wait for player to be ready
+        yield return new WaitUntil(() => GameObject.FindGameObjectWithTag("Player") != null);
         playerCarTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
         int poolSize = 20;
         switch (GameManager.Instance.CurrentDifficulty)
         {
-            case GameManager.Difficulty.Easy:
-                poolSize = 10;
-                break;
-            case GameManager.Difficulty.Normal:
-                poolSize = 20;
-                break;
-            case GameManager.Difficulty.Hard:
-                poolSize = 30;
-                break;
+            case GameManager.Difficulty.Easy: poolSize = 10; break;
+            case GameManager.Difficulty.Normal: poolSize = 20; break;
+            case GameManager.Difficulty.Hard: poolSize = 30; break;
         }
-        carAIPool = new GameObject[poolSize];
 
+        carAIPool = new GameObject[poolSize];
         int prefabIndex = 0;
 
         for (int i = 0; i < carAIPool.Length; i++)
@@ -46,15 +42,13 @@ public class AICarSpawner : MonoBehaviour
             carAIPool[i].SetActive(false);
 
             prefabIndex++;
-
-            //Loop the prefab Index if we run out of prefabs
             if (prefabIndex > carAIPrefabs.Length - 1)
                 prefabIndex = 0;
         }
 
         StartCoroutine(UpdateLessOftenCO());
     }
-    
+
     IEnumerator UpdateLessOftenCO()
     {
        while (true)
@@ -118,6 +112,5 @@ public class AICarSpawner : MonoBehaviour
             if (aiCar.transform.position.z - playerCarTransform.position.z < -50)
                 aiCar.SetActive(false);        
         }
-    }
-         
+    }  
 }

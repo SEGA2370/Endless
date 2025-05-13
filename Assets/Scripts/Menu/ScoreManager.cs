@@ -13,24 +13,20 @@ public class ScoreManager : MonoBehaviour
 
     private float startZ;
     private float score;
-    private bool isCounting = true;
+    private bool isCounting = false; // Changed default to false
     private int bestScore = 0;
 
     private void Start()
     {
-        if (playerCarTransform == null)
-            playerCarTransform = GameObject.FindGameObjectWithTag("Player").transform;
-
-        startZ = playerCarTransform.position.z;
-
-        // Load best score
+        // Load best score only; do not try to find player car yet
         bestScore = PlayerPrefs.GetInt("BestScore", 0);
         UpdateBestScoreText();
     }
 
     private void Update()
     {
-        if (!isCounting)
+        // Don’t run if score tracking is off or player car not set
+        if (!isCounting || playerCarTransform == null)
             return;
 
         float distanceTravelled = playerCarTransform.position.z - startZ;
@@ -47,13 +43,20 @@ public class ScoreManager : MonoBehaviour
 
         int finalScore = Mathf.FloorToInt(score);
 
-        // Check if we have a new best score
+        // Save best score if new high score achieved
         if (finalScore > bestScore)
         {
             bestScore = finalScore;
             PlayerPrefs.SetInt("BestScore", bestScore);
             PlayerPrefs.Save();
         }
+    }
+
+    public void SetPlayer(Transform newPlayerTransform)
+    {
+        playerCarTransform = newPlayerTransform;
+        startZ = playerCarTransform.position.z;
+        isCounting = true;
     }
 
     private void UpdateBestScoreText()

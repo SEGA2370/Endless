@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 1;
     }
 
     public void StartGame()
