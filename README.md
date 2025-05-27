@@ -1,7 +1,7 @@
 # 🚗 Endless Driving
 
 <img src="Assets/Game.jpg" alt="Endless Driving Gameplay 1" width="600"/>
-<img src="Assets/Images/endless_drive_preview_2.jpg" alt="Endless Driving Gameplay 2" width="600"/>
+<img src="Assets/Input .jpg" alt="Endless Driving Gameplay 2" width="600"/>
 
 ## 🎮 Game Overview
 
