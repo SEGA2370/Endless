@@ -35,8 +35,6 @@ The longer you survive, the higher your score. Challenge your reflexes and break
 | Move Left      | `A` or `←`         |
 | Move Right     | `D` or `→`         |
 | Brake          | `S` or `↓`         |
-| Accelerate     | `W` or `↑`         |
-| Restart        | `R`                |
 
 ### 📱 Android
 
