@@ -24,8 +24,6 @@ public class InputHandler : MonoBehaviour
         HandleKeyboardInput();
 #endif
 
-        HandleTouchInput();
-
         if (Input.GetKeyDown(KeyCode.R))
         {
             Time.timeScale = 1f; // Reset time scale before reloading
@@ -35,12 +33,24 @@ public class InputHandler : MonoBehaviour
 
     void HandleKeyboardInput()
     {
-        Vector2 input = Vector2.zero;
+        float vertical = 1f; // Always moving forward
 
-        input.x = Input.GetAxis("Horizontal");
-        input.y = Input.GetAxis("Vertical");
+        // Brake if Space is pressed
+        if (Input.GetKey(KeyCode.S))
+        {
+            vertical = -1f;
+        }
 
-        carHandler.SetInput(input);
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            carHandler.ChangeLane(-1); // Move left
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            carHandler.ChangeLane(1); // Move right
+        }
+
+        carHandler.SetForwardInput(vertical);
     }
 
     void HandleTouchInput()
